@@ -1,0 +1,79 @@
+---
+title: "zjin26_mini-assign4"
+author: "Vincent Jin"
+date: "2023-04-03"
+output: pdf_document
+---
+
+# ============================================================ 
+# 	Mini-assignment # 4
+# ============================================================ 
+
+# (1) calculate and store the min, max, mean, and standard deviation of all numerical columns for the following data.table:
+
+``` {r}
+library(data.table)
+set.seed(100)
+a = sample(65:110,1000,replace=T)
+b = sample(c('M','F','F'),1000,replace=T)
+c = sample(c('W','W','W','B','B','A','O',NA),1000,replace=T)
+d = sample(100:5000,1000)*a
+e = runif(1000,0,1)*(a/110)
+dt = data.table(age = a, sex = b, race = c, cost = d, risk = e)
+```
+
+``` {r}
+col <- names(dt)
+
+for (i in col) {
+  if (typeof(dt[[i]]) != "character") {
+    cat(paste("the min, max, mean, sd of", i, "is :\n"))
+    print(min(dt[[i]]))
+    print(max(dt[[i]]))
+    print(mean(dt[[i]]))
+    print(sd(dt[[i]]))
+  }
+}
+```
+
+# (2) print mean and standard deviation (2 decimals) of the numerical columns as below (replace XXX with actual variables):
+# The study population has an average age of XXX years with a standard deviation of XXX years
+# The study population has an average cost of XXX dollars with a maximum of XXX dollars
+# The total risk ranged between minimum of XXX and maximum of XXX
+
+``` {r}
+print(paste("The study population has an average age of", round(mean(dt$age), 2), "years with a standard deviation of", round(sd(dt$age), 2), "years"))
+print(paste("The study population has an average cost of", round(mean(dt$cost), 2), "dollars with a standard deviation of", round(sd(dt$cost), 2), "dollars"))
+print(paste("The total risk ranged between minimum of", round(min(dt$risk), 2), "and maximum of", round(max(dt$risk), 2)))
+```
+
+# (3) calculate the mean age, cost, and risk of each race as well as populations with missing race separately
+# try using the short/alternate built-in data.table syntax (although base R syntax is also acceptable)
+
+``` {r}
+col <- c("age", "cost", "risk")
+race <- unique(dt$race)
+for (i in col) {
+  for (r in race) {
+    if (is.na(r) != TRUE) {
+      print(paste("the mean", i, "of race", r, "is: "))
+      print(mean(dt[[i]][which(dt$race == r)]))
+    } else {
+      print(paste("the mean", i, "of race", r, "is: "))
+      print(mean(dt[[i]][which(is.na(dt$race))]))
+    }
+  }
+}
+```
+
+# (4) show the histogram of age for the female population
+
+``` {r}
+hist(dt$age[which(dt$sex == "F")])
+```
+
+# (5) show the scatter plot of age vs. risk for the male population
+
+``` {r}
+plot(age ~ risk, data = dt[which(dt$sex == "M")])
+```
